@@ -6,6 +6,12 @@ const errorText = document.getElementById("login-error");
 const customersGrid = document.getElementById("customers-grid");
 const customerCount = document.getElementById("customer-count");
 const customerSearch = document.getElementById("customer-search");
+const dashboardTitle = document.getElementById("dashboard-title");
+const requestsView = document.getElementById("requests-view");
+const requestsBody = document.getElementById("requests-body");
+const navItems = document.querySelectorAll(".nav-item[data-view]");
+
+let activeView = "customers";
 
 const showDashboard = () => {
   loginSection.classList.add("hidden");
@@ -63,6 +69,71 @@ const loadCustomers = async (query = "") => {
   renderCustomers(data.customers || []);
 };
 
+const renderRequests = (requests) => {
+  if (!requestsBody) {
+    return;
+  }
+
+  requestsBody.innerHTML = requests
+    .map((request) => {
+      return `
+        <tr>
+          <td>${request.name}</td>
+          <td>${request.email}</td>
+          <td>${request.topic}</td>
+          <td>${request.summary || "Keine Notizen"}</td>
+          <td>${new Date(request.createdAt).toLocaleDateString("de-CH")}</td>
+          <td>${request.status}</td>
+        </tr>
+      `;
+    })
+    .join("");
+};
+
+const loadRequests = async (query = "") => {
+  if (!requestsBody) {
+    return;
+  }
+
+  requestsBody.innerHTML = "<tr><td colspan=\"6\">Lade Anfragen...</td></tr>";
+  const url = query ? `/api/requests?q=${encodeURIComponent(query)}` : "/api/requests";
+  const response = await fetch(url);
+  const data = await response.json();
+  renderRequests(data.requests || []);
+  if (customerCount) {
+    customerCount.textContent = data.requests?.length ?? 0;
+  }
+};
+
+const switchView = (view) => {
+  activeView = view;
+  navItems.forEach((item) => {
+    item.classList.toggle("active", item.dataset.view === view);
+  });
+
+  if (dashboardTitle) {
+    dashboardTitle.textContent = view === "customers" ? "Kunden" : "Anfragen";
+  }
+
+  if (customersGrid) {
+    customersGrid.classList.toggle("hidden", view !== "customers");
+  }
+
+  if (requestsView) {
+    requestsView.classList.toggle("hidden", view !== "requests");
+  }
+
+  if (customerSearch) {
+    customerSearch.value = "";
+  }
+
+  if (view === "customers") {
+    loadCustomers();
+  } else {
+    loadRequests();
+  }
+};
+
 loginForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const input = loginForm.querySelector("input[name='password']");
@@ -73,6 +144,7 @@ loginForm?.addEventListener("submit", (event) => {
   if (input.value === PASSWORD) {
     errorText.textContent = "";
     showDashboard();
+    switchView("customers");
     loadCustomers();
   } else {
     errorText.textContent = "Passwort falsch. Bitte erneut versuchen.";
@@ -82,5 +154,16 @@ loginForm?.addEventListener("submit", (event) => {
 });
 
 customerSearch?.addEventListener("input", (event) => {
+  if (activeView === "customers") {
+    loadCustomers(event.target.value);
+  } else {
+    loadRequests(event.target.value);
+  }
+});
+
+navItems.forEach((item) => {
+  item.addEventListener("click", () => {
+    switchView(item.dataset.view);
+  });
   loadCustomers(event.target.value);
 });

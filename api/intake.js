@@ -1,3 +1,4 @@
+import { createCustomer, createRequest } from "./dataStore.js";
 import { createCustomer } from "./dataStore.js";
 
 export default function handler(req, res) {
@@ -16,11 +17,19 @@ export default function handler(req, res) {
   }
 
   const customer = createCustomer({ name, email, topic, summary });
+  const request = createRequest({
+    customerId: customer.id,
+    name,
+    email,
+    topic,
+    summary
+  });
 
   return res.status(201).json({
     status: "received",
     reference: `LM-${Date.now()}`,
     customer,
+    request,
   return res.status(201).json({
     status: "received",
     reference: `LM-${Date.now()}`,

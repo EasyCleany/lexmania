@@ -239,6 +239,35 @@ input {
   gap: 1.4rem;
 }
 
+.requests-table {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.requests-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.requests-table th,
+.requests-table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.requests-table thead {
+  background: var(--bg);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.requests-table tbody tr:hover {
+  background: rgba(131, 60, 207, 0.05);
+}
+
 .customer-card {
   border: 1px solid var(--border);
   border-radius: 16px;
