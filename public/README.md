@@ -41,3 +41,8 @@ Die Admin-Seite ist unter `/admin/` erreichbar und zeigt nach dem Login Kundenka
 
 ## Kundenliste & Anfragen
 Wenn ein Gast das Intake-Formular absendet, wird automatisch ein Kunde erstellt und parallel als Anfrage in der Tabelle geführt.
+Die Admin-Seite ist unter `/admin/` erreichbar und zeigt nach dem Login eine Kundenliste sowie API-Links.
+
+## Kundenliste
+Wenn ein Gast das Intake-Formular absendet, wird automatisch ein Kunde erstellt und in der Admin-Seite angezeigt.
+Die Admin-Seite ist unter `/admin/` erreichbar und erlaubt den direkten Zugriff auf die API-Links.

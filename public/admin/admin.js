@@ -145,6 +145,7 @@ loginForm?.addEventListener("submit", (event) => {
     errorText.textContent = "";
     showDashboard();
     switchView("customers");
+    loadCustomers();
   } else {
     errorText.textContent = "Passwort falsch. Bitte erneut versuchen.";
   }
@@ -164,4 +165,5 @@ navItems.forEach((item) => {
   item.addEventListener("click", () => {
     switchView(item.dataset.view);
   });
+  loadCustomers(event.target.value);
 });

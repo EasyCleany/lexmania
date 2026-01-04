@@ -72,3 +72,4 @@ const createRequest = ({ customerId, name, email, topic, summary }) => {
 };
 
 export { customers, createCustomer, requests, createRequest };
+export { customers, createCustomer };
