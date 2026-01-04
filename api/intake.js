@@ -1,5 +1,4 @@
 import { createCustomer, createRequest } from "./dataStore.js";
-import { createCustomer } from "./dataStore.js";
 
 export default function handler(req, res) {
   if (req.method !== "POST") {
@@ -30,9 +29,6 @@ export default function handler(req, res) {
     reference: `LM-${Date.now()}`,
     customer,
     request,
-  return res.status(201).json({
-    status: "received",
-    reference: `LM-${Date.now()}`,
     nextSteps: [
       "Fallprüfung durch AI Lexy",
       "Matching mit passenden Dienstleistern",
