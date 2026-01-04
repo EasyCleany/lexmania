@@ -34,3 +34,6 @@ Mit Vercel Serverless Functions kannst du lokal oder live via HTTP zugreifen.
    ```bash
    curl https://<dein-projekt>.vercel.app/api/health
    ```
+
+## Admin-Seite
+Die Admin-Seite ist unter `/admin/` erreichbar und erlaubt den direkten Zugriff auf die API-Links.
