@@ -143,6 +143,13 @@ body {
   padding: 2rem;
 }
 
+#home-view {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.login-card {
+  max-width: 420px;
 .login-card {
   max-width: 420px;
 .admin-shell {

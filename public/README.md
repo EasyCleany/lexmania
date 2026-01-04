@@ -37,6 +37,10 @@ Mit Vercel Serverless Functions kannst du lokal oder live via HTTP zugreifen.
    ```
 
 ## Admin-Seite
+Die Admin-Seite ist unter `/admin/` erreichbar und zeigt Kundenkacheln sowie eine Tabelle unter **Anfragen**.
+
+## Kundenliste & Anfragen
+Wenn ein Gast das Intake-Formular absendet, wird automatisch ein Kunde erstellt und parallel als Anfrage in der Tabelle geführt.
 Die Admin-Seite ist unter `/admin/` erreichbar und zeigt nach dem Login Kundenkacheln sowie eine Tabelle unter **Anfragen**.
 
 ## Kundenliste & Anfragen

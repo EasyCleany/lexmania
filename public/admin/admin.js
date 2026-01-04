@@ -1,3 +1,5 @@
+const homeView = document.getElementById("home-view");
+const dashboardSection = document.getElementById("dashboard");
 const PASSWORD = "Nibero2025!!";
 const loginForm = document.getElementById("login-form");
 const loginSection = document.getElementById("login");
@@ -14,6 +16,9 @@ const navItems = document.querySelectorAll(".nav-item[data-view]");
 let activeView = "customers";
 
 const showDashboard = () => {
+  if (homeView) {
+    homeView.classList.add("hidden");
+  }
   loginSection.classList.add("hidden");
   dashboardSection.classList.remove("hidden");
 };
@@ -127,6 +132,7 @@ const switchView = (view) => {
     customerSearch.value = "";
   }
 
+  showDashboard();
   if (view === "customers") {
     loadCustomers();
   } else {
