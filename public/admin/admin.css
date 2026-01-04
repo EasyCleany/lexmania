@@ -326,6 +326,21 @@ input {
   border-bottom: 1px solid var(--border);
 }
 
+}
+
+.requests-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.requests-table th,
+.requests-table td {
+  text-align: left;
+  padding: 0.8rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
 .api-panel .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -352,6 +367,12 @@ textarea {
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 1.5rem;
+}
+
+.api-panel h4 {
+  margin-bottom: 0.3rem;
+}
+
 }
 
 .api-panel h4 {

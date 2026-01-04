@@ -23,6 +23,9 @@ let isAuthenticated = false;
 let requestsCache = [];
 let selectedRequestId = null;
 
+let activeView = "customers";
+let isAuthenticated = false;
+
 const showDashboard = () => {
   loginSection?.classList.add("hidden");
   dashboardSection?.classList.remove("hidden");
@@ -129,6 +132,7 @@ const loadRequests = async (query = "") => {
   }
 
   requestsBody.innerHTML = '<tr><td colspan="7">Lade Anfragen...</td></tr>';
+  requestsBody.innerHTML = '<tr><td colspan="6">Lade Anfragen...</td></tr>';
   const url = query ? `/api/requests?q=${encodeURIComponent(query)}` : "/api/requests";
   const response = await fetch(url);
   const data = await response.json();

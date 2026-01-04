@@ -134,6 +134,56 @@
               <button type="submit" class="btn">Angebot senden</button>
             </div>
           </form>
+
+        <section class="card api-panel">
+          <h3>Backend Zugriff</h3>
+          <p>Direkte Links und Beispielabfragen für die lexmania API.</p>
+          <div class="grid">
+            <div>
+              <h4>Health Check</h4>
+              <a href="/api/health" target="_blank" rel="noreferrer">/api/health</a>
+            </div>
+            <div>
+              <h4>Kategorien</h4>
+              <a href="/api/categories" target="_blank" rel="noreferrer">/api/categories</a>
+            </div>
+            <div>
+              <h4>Anbieter</h4>
+              <a href="/api/providers" target="_blank" rel="noreferrer">/api/providers</a>
+            </div>
+            <div>
+              <h4>Offers</h4>
+              <a href="/api/offers" target="_blank" rel="noreferrer">/api/offers</a>
+            </div>
+            <div>
+              <h4>Slots</h4>
+              <a href="/api/slots" target="_blank" rel="noreferrer">/api/slots</a>
+            </div>
+            <div>
+              <h4>Kunden</h4>
+              <a href="/api/customers" target="_blank" rel="noreferrer">/api/customers</a>
+            </div>
+            <div>
+              <h4>Anfragen</h4>
+              <a href="/api/requests" target="_blank" rel="noreferrer">/api/requests</a>
+            </div>
+          </div>
+
+          <div class="examples">
+            <h4>Beispiel POST /api/intake</h4>
+            <pre>
+fetch("/api/intake", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    name: "Max Muster",
+    email: "max@lexmania.ch",
+    topic: "Wohnen & Nachbarschaft",
+    summary: "Lärmbelästigung und Mietsenkung"
+  })
+});
+            </pre>
+          </div>
         </section>
       </section>
     </main>
