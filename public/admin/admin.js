@@ -3,6 +3,8 @@ const PASSWORD = "Nibero2025!!";
 const loginForm = document.getElementById("login-form");
 const loginSection = document.getElementById("login");
 const dashboardSection = document.getElementById("dashboard");
+const topbar = document.getElementById("portal-topbar");
+const sidebar = document.getElementById("portal-sidebar");
 const errorText = document.getElementById("login-error");
 const customersGrid = document.getElementById("customers-grid");
 const dashboardCount = document.getElementById("dashboard-count");
@@ -12,6 +14,14 @@ const requestsView = document.getElementById("requests-view");
 const requestsBody = document.getElementById("requests-body");
 const navItems = document.querySelectorAll(".nav-item[data-view]");
 const refreshButton = document.getElementById("refresh-button");
+const offerModal = document.getElementById("offer-modal");
+const offerForm = document.getElementById("offer-form");
+const cancelOfferButton = document.getElementById("cancel-offer");
+
+let activeView = "customers";
+let isAuthenticated = false;
+let requestsCache = [];
+let selectedRequestId = null;
 
 let activeView = "customers";
 let isAuthenticated = false;
@@ -19,6 +29,8 @@ let isAuthenticated = false;
 const showDashboard = () => {
   loginSection?.classList.add("hidden");
   dashboardSection?.classList.remove("hidden");
+  topbar?.classList.remove("hidden");
+  sidebar?.classList.remove("hidden");
 };
 
 const showLogin = (message = "") => {
@@ -27,6 +39,9 @@ const showLogin = (message = "") => {
   }
   loginSection?.classList.remove("hidden");
   dashboardSection?.classList.add("hidden");
+  topbar?.classList.add("hidden");
+  sidebar?.classList.add("hidden");
+  offerModal?.classList.add("hidden");
 };
 
 const renderCustomers = (customers) => {
@@ -73,8 +88,13 @@ const renderRequests = (requests) => {
     return;
   }
 
+  requestsCache = requests;
   requestsBody.innerHTML = requests
     .map((request) => {
+      const statusLabel = request.status || "Offen";
+      const statusClass =
+        statusLabel.toLowerCase() === "angefragt" ? "status-requested" : "status-open";
+
       return `
         <tr>
           <td>${request.name}</td>
@@ -82,7 +102,12 @@ const renderRequests = (requests) => {
           <td>${request.topic}</td>
           <td>${request.summary || "Keine Notizen"}</td>
           <td>${new Date(request.createdAt).toLocaleDateString("de-CH")}</td>
-          <td>${request.status}</td>
+          <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+          <td>
+            <button class="offer-button" type="button" data-request-id="${request.id}">
+              Angebot senden
+            </button>
+          </td>
         </tr>
       `;
     })
@@ -106,6 +131,7 @@ const loadRequests = async (query = "") => {
     return;
   }
 
+  requestsBody.innerHTML = '<tr><td colspan="7">Lade Anfragen...</td></tr>';
   requestsBody.innerHTML = '<tr><td colspan="6">Lade Anfragen...</td></tr>';
   const url = query ? `/api/requests?q=${encodeURIComponent(query)}` : "/api/requests";
   const response = await fetch(url);
@@ -138,6 +164,32 @@ const applyView = (view) => {
   } else {
     loadRequests();
   }
+};
+
+const openOfferModal = (request) => {
+  if (!offerModal || !offerForm) {
+    return;
+  }
+
+  selectedRequestId = request.id;
+  offerForm.customerName.value = request.name;
+  offerForm.customerEmail.value = request.email;
+  offerForm.customerTopic.value = request.topic;
+  offerForm.offerPrice.value = "";
+  offerForm.offerLawyer.value = "";
+  offerForm.offerContact.value = "";
+  offerForm.offerNote.value = "";
+  offerModal.classList.remove("hidden");
+  offerModal.setAttribute("aria-hidden", "false");
+};
+
+const closeOfferModal = () => {
+  if (!offerModal) {
+    return;
+  }
+  offerModal.classList.add("hidden");
+  offerModal.setAttribute("aria-hidden", "true");
+  selectedRequestId = null;
 };
 
 loginForm?.addEventListener("submit", (event) => {
@@ -183,6 +235,41 @@ navItems.forEach((item) => {
     }
     applyView(item.dataset.view);
   });
+});
+
+requestsBody?.addEventListener("click", (event) => {
+  const button = event.target.closest(".offer-button");
+  if (!button) {
+    return;
+  }
+  const requestId = button.dataset.requestId;
+  const request = requestsCache.find((item) => item.id === requestId);
+  if (request) {
+    openOfferModal(request);
+  }
+});
+
+cancelOfferButton?.addEventListener("click", closeOfferModal);
+
+offerForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!selectedRequestId) {
+    return;
+  }
+
+  const requestIndex = requestsCache.findIndex((item) => item.id === selectedRequestId);
+  if (requestIndex === -1) {
+    return;
+  }
+
+  requestsCache[requestIndex] = {
+    ...requestsCache[requestIndex],
+    status: "Angefragt"
+  };
+
+  renderRequests(requestsCache);
+  closeOfferModal();
+  alert("Angebot gesendet. Der Gast erhält eine E-Mail mit den Offertedaten.");
 });
 
 showLogin("");

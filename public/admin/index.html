@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="admin.css" />
   </head>
   <body>
-    <header class="topbar">
+    <header class="topbar hidden" id="portal-topbar">
       <div class="brand">
         <span class="logo-dot"></span>
         <span>lexmania Portal</span>
@@ -26,7 +26,7 @@
     </header>
 
     <main class="admin-layout">
-      <aside class="sidebar">
+      <aside class="sidebar hidden" id="portal-sidebar">
         <div class="sidebar-header">
           <h2>Administrationscenter</h2>
           <p>Übersicht &amp; Steuerung aller Anfragen.</p>
@@ -85,12 +85,55 @@
                   <th>Beschreibung</th>
                   <th>Datum</th>
                   <th>Status</th>
+                  <th>Aktion</th>
                 </tr>
               </thead>
               <tbody id="requests-body"></tbody>
             </table>
           </div>
         </section>
+
+        <section class="card hidden" id="offer-modal" aria-hidden="true">
+          <h3>Angebot senden</h3>
+          <p>Die Kundendaten sind fixiert. Bitte Offerte ausfüllen.</p>
+          <form id="offer-form">
+            <div class="form-grid">
+              <label>
+                Kunde
+                <input type="text" name="customerName" readonly />
+              </label>
+              <label>
+                E-Mail
+                <input type="email" name="customerEmail" readonly />
+              </label>
+              <label>
+                Thema
+                <input type="text" name="customerTopic" readonly />
+              </label>
+            </div>
+            <div class="form-grid">
+              <label>
+                Preis (CHF)
+                <input type="number" name="offerPrice" placeholder="z.B. 250" required />
+              </label>
+              <label>
+                Anwalt / Kanzlei
+                <input type="text" name="offerLawyer" placeholder="Name oder Kanzlei" required />
+              </label>
+              <label>
+                Kontaktdaten
+                <input type="text" name="offerContact" placeholder="Telefon oder E-Mail" required />
+              </label>
+            </div>
+            <label>
+              Kommentar
+              <textarea name="offerNote" rows="4" placeholder="Optionaler Kommentar"></textarea>
+            </label>
+            <div class="modal-actions">
+              <button type="button" class="ghost-button" id="cancel-offer">Abbrechen</button>
+              <button type="submit" class="btn">Angebot senden</button>
+            </div>
+          </form>
 
         <section class="card api-panel">
           <h3>Backend Zugriff</h3>
