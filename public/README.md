@@ -17,6 +17,7 @@ vercel dev
 - `GET /api/providers?category=wohnen`
 - `GET /api/offers`
 - `GET /api/slots?providerId=lm-101`
+- `GET /api/customers?q=marco`
 
 ## Zugriff auf das Backend
 Mit Vercel Serverless Functions kannst du lokal oder live via HTTP zugreifen.
@@ -36,4 +37,8 @@ Mit Vercel Serverless Functions kannst du lokal oder live via HTTP zugreifen.
    ```
 
 ## Admin-Seite
+Die Admin-Seite ist unter `/admin/` erreichbar und zeigt nach dem Login eine Kundenliste sowie API-Links.
+
+## Kundenliste
+Wenn ein Gast das Intake-Formular absendet, wird automatisch ein Kunde erstellt und in der Admin-Seite angezeigt.
 Die Admin-Seite ist unter `/admin/` erreichbar und erlaubt den direkten Zugriff auf die API-Links.

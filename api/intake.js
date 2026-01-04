@@ -1,3 +1,5 @@
+import { createCustomer } from "./dataStore.js";
+
 export default function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -13,6 +15,12 @@ export default function handler(req, res) {
     });
   }
 
+  const customer = createCustomer({ name, email, topic, summary });
+
+  return res.status(201).json({
+    status: "received",
+    reference: `LM-${Date.now()}`,
+    customer,
   return res.status(201).json({
     status: "received",
     reference: `LM-${Date.now()}`,
