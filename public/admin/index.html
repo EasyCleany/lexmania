@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>lexmania Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo-dot"></span>
+        <span>Bookings</span>
+      </div>
+      <div class="topbar-actions">
+        <span class="trial">Ihre Probezeit endet in 15 Tagen.</span>
+        <button class="ghost-button">Jetzt aufrüsten</button>
+        <button class="icon-button">+</button>
+      </div>
+    </header>
+
+    <main class="admin-layout">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>Administrationscenter</h2>
+          <input type="search" placeholder="Suche" />
+        </div>
+        <nav>
+          <p class="nav-title">Organisation</p>
+          <button class="nav-item active" data-view="customers">Kunden</button>
+          <button class="nav-item" data-view="requests">Anfragen</button>
+          <button class="nav-item">Arbeitsbereiche</button>
+          <button class="nav-item">Ressourcen</button>
+          <button class="nav-item">Berichte</button>
+        </nav>
+      </aside>
+
+      <section class="content">
+        <section class="card login-card" id="login">
+          <h1>lexmania Admin-Zugang</h1>
+          <p>Bitte Passwort eingeben, um auf die Backend-Tools zuzugreifen.</p>
+          <form id="login-form">
+            <label>
+              Passwort
+              <input type="password" name="password" placeholder="Passwort" required />
+            </label>
+            <button type="submit" class="btn">Login</button>
+            <p class="hint" id="login-error"></p>
+          </form>
+        </section>
+
+        <section class="card hidden" id="dashboard">
+          <header class="dashboard-header">
+            <div>
+              <h2 id="dashboard-title">Kunden</h2>
+              <span class="badge" id="customer-count">0</span>
+            </div>
+            <div class="dashboard-actions">
+              <div class="search">
+                <input type="search" id="customer-search" placeholder="Suche" />
+              </div>
+              <button class="ghost-button">+ Neu – Kunde</button>
+            </div>
+          </header>
+
+          <div class="customers-grid" id="customers-grid"></div>
+
+          <div class="requests-table hidden" id="requests-view">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kunde</th>
+                  <th>E-Mail</th>
+                  <th>Thema</th>
+                  <th>Beschreibung</th>
+                  <th>Datum</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="requests-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
