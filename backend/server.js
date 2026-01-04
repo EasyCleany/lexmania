@@ -1,11 +1,17 @@
-import { createCustomer } from "./dataStore.js";
+import express from "express";
+import cors from "cors";
 
-export default function handler(req, res) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", ["POST"]);
-    return res.status(405).json({ status: "error", message: "Method not allowed" });
-  }
+const app = express();
+const port = process.env.PORT || 4000;
 
+app.use(cors());
+app.use(express.json());
+
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok", service: "lexmania-backend" });
+});
+
+app.post("/api/intake", (req, res) => {
   const { name, email, topic, summary } = req.body ?? {};
 
   if (!name || !email || !topic) {
@@ -15,12 +21,6 @@ export default function handler(req, res) {
     });
   }
 
-  const customer = createCustomer({ name, email, topic, summary });
-
-  return res.status(201).json({
-    status: "received",
-    reference: `LM-${Date.now()}`,
-    customer,
   return res.status(201).json({
     status: "received",
     reference: `LM-${Date.now()}`,
@@ -31,4 +31,8 @@ export default function handler(req, res) {
     ],
     summary: summary ?? ""
   });
-}
+});
+
+app.listen(port, () => {
+  console.log(`lexmania backend listening on :${port}`);
+});
