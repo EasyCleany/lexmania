@@ -35,6 +35,7 @@
           <p class="nav-title">Organisation</p>
           <button class="nav-item active" data-view="customers">Kunden</button>
           <button class="nav-item" data-view="requests">Anfragen</button>
+          <button class="nav-item active">Kunden</button>
           <button class="nav-item">Arbeitsbereiche</button>
           <button class="nav-item">Ressourcen</button>
           <button class="nav-item">Berichte</button>
@@ -45,12 +46,24 @@
         <section class="card" id="home-view">
           <h1>Administrationscenter</h1>
           <p>Wähle links eine Ansicht, um Kunden oder Anfragen zu prüfen.</p>
+        <section class="card login-card" id="login">
+          <h1>lexmania Admin-Zugang</h1>
+          <p>Bitte Passwort eingeben, um auf die Backend-Tools zuzugreifen.</p>
+          <form id="login-form">
+            <label>
+              Passwort
+              <input type="password" name="password" placeholder="Passwort" required />
+            </label>
+            <button type="submit" class="btn">Login</button>
+            <p class="hint" id="login-error"></p>
+          </form>
         </section>
 
         <section class="card hidden" id="dashboard">
           <header class="dashboard-header">
             <div>
               <h2 id="dashboard-title">Kunden</h2>
+              <h2>Kunden</h2>
               <span class="badge" id="customer-count">0</span>
             </div>
             <div class="dashboard-actions">
@@ -79,6 +92,100 @@
             </table>
           </div>
         </section>
+          <section class="api-panel">
+            <h3>Backend Zugriff</h3>
+            <p>Direkte Links und Beispielabfragen für die lexmania API.</p>
+            <div class="grid">
+              <div>
+                <h4>Health Check</h4>
+                <a href="/api/health" target="_blank" rel="noreferrer">/api/health</a>
+              </div>
+              <div>
+                <h4>Kategorien</h4>
+                <a href="/api/categories" target="_blank" rel="noreferrer">/api/categories</a>
+              </div>
+              <div>
+                <h4>Anbieter</h4>
+                <a href="/api/providers" target="_blank" rel="noreferrer">/api/providers</a>
+              </div>
+              <div>
+                <h4>Offers</h4>
+                <a href="/api/offers" target="_blank" rel="noreferrer">/api/offers</a>
+              </div>
+              <div>
+                <h4>Slots</h4>
+                <a href="/api/slots" target="_blank" rel="noreferrer">/api/slots</a>
+              </div>
+              <div>
+                <h4>Customers</h4>
+                <a href="/api/customers" target="_blank" rel="noreferrer">/api/customers</a>
+              </div>
+            </div>
+
+            <div class="examples">
+              <h4>Beispiel POST /api/intake</h4>
+              <pre>
+    <main class="admin-shell">
+      <section class="card" id="login">
+        <h1>lexmania Admin-Zugang</h1>
+        <p>Bitte Passwort eingeben, um auf die Backend-Tools zuzugreifen.</p>
+        <form id="login-form">
+          <label>
+            Passwort
+            <input type="password" name="password" placeholder="Passwort" required />
+          </label>
+          <button type="submit" class="btn">Login</button>
+          <p class="hint" id="login-error"></p>
+        </form>
+      </section>
+
+      <section class="card hidden" id="dashboard">
+        <header>
+          <h2>Backend Zugriff</h2>
+          <p>Direkte Links und Beispielabfragen für die lexmania API.</p>
+        </header>
+        <div class="grid">
+          <div>
+            <h3>Health Check</h3>
+            <a href="/api/health" target="_blank" rel="noreferrer">/api/health</a>
+          </div>
+          <div>
+            <h3>Kategorien</h3>
+            <a href="/api/categories" target="_blank" rel="noreferrer">/api/categories</a>
+          </div>
+          <div>
+            <h3>Anbieter</h3>
+            <a href="/api/providers" target="_blank" rel="noreferrer">/api/providers</a>
+          </div>
+          <div>
+            <h3>Offers</h3>
+            <a href="/api/offers" target="_blank" rel="noreferrer">/api/offers</a>
+          </div>
+          <div>
+            <h3>Slots</h3>
+            <a href="/api/slots" target="_blank" rel="noreferrer">/api/slots</a>
+          </div>
+        </div>
+
+        <div class="examples">
+          <h3>Beispiel POST /api/intake</h3>
+          <pre>
+fetch("/api/intake", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    name: "Max Muster",
+    email: "max@lexmania.ch",
+    topic: "Wohnen & Nachbarschaft",
+    summary: "Lärmbelästigung und Mietsenkung"
+  })
+});
+              </pre>
+            </div>
+          </section>
+        </section>
+          </pre>
+        </div>
       </section>
     </main>
 
