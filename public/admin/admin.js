@@ -1,34 +1,52 @@
-const homeView = document.getElementById("home-view");
-const dashboardSection = document.getElementById("dashboard");
 const PASSWORD = "Nibero2025!!";
+
 const loginForm = document.getElementById("login-form");
 const loginSection = document.getElementById("login");
 const dashboardSection = document.getElementById("dashboard");
+const topbar = document.getElementById("portal-topbar");
+const sidebar = document.getElementById("portal-sidebar");
 const errorText = document.getElementById("login-error");
 const customersGrid = document.getElementById("customers-grid");
-const customerCount = document.getElementById("customer-count");
-const customerSearch = document.getElementById("customer-search");
+const dashboardCount = document.getElementById("dashboard-count");
+const dashboardSearch = document.getElementById("dashboard-search");
 const dashboardTitle = document.getElementById("dashboard-title");
 const requestsView = document.getElementById("requests-view");
 const requestsBody = document.getElementById("requests-body");
 const navItems = document.querySelectorAll(".nav-item[data-view]");
+const refreshButton = document.getElementById("refresh-button");
+const offerModal = document.getElementById("offer-modal");
+const offerForm = document.getElementById("offer-form");
+const cancelOfferButton = document.getElementById("cancel-offer");
 
 let activeView = "customers";
+let isAuthenticated = false;
+let requestsCache = [];
+let selectedRequestId = null;
 
 const showDashboard = () => {
-  if (homeView) {
-    homeView.classList.add("hidden");
+  loginSection?.classList.add("hidden");
+  dashboardSection?.classList.remove("hidden");
+  topbar?.classList.remove("hidden");
+  sidebar?.classList.remove("hidden");
+};
+
+const showLogin = (message = "") => {
+  if (errorText) {
+    errorText.textContent = message;
   }
-  loginSection.classList.add("hidden");
-  dashboardSection.classList.remove("hidden");
+  loginSection?.classList.remove("hidden");
+  dashboardSection?.classList.add("hidden");
+  topbar?.classList.add("hidden");
+  sidebar?.classList.add("hidden");
+  offerModal?.classList.add("hidden");
 };
 
 const renderCustomers = (customers) => {
-  if (!customersGrid || !customerCount) {
+  if (!customersGrid || !dashboardCount) {
     return;
   }
 
-  customerCount.textContent = customers.length;
+  dashboardCount.textContent = customers.length;
   customersGrid.innerHTML = customers
     .map((customer) => {
       const initials = customer.name
@@ -62,6 +80,37 @@ const renderCustomers = (customers) => {
     .join("");
 };
 
+const renderRequests = (requests) => {
+  if (!requestsBody) {
+    return;
+  }
+
+  requestsCache = requests;
+  requestsBody.innerHTML = requests
+    .map((request) => {
+      const statusLabel = request.status || "Offen";
+      const statusClass =
+        statusLabel.toLowerCase() === "angefragt" ? "status-requested" : "status-open";
+
+      return `
+        <tr>
+          <td>${request.name}</td>
+          <td>${request.email}</td>
+          <td>${request.topic}</td>
+          <td>${request.summary || "Keine Notizen"}</td>
+          <td>${new Date(request.createdAt).toLocaleDateString("de-CH")}</td>
+          <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+          <td>
+            <button class="offer-button" type="button" data-request-id="${request.id}">
+              Angebot senden
+            </button>
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+};
+
 const loadCustomers = async (query = "") => {
   if (!customersGrid) {
     return;
@@ -74,43 +123,22 @@ const loadCustomers = async (query = "") => {
   renderCustomers(data.customers || []);
 };
 
-const renderRequests = (requests) => {
-  if (!requestsBody) {
-    return;
-  }
-
-  requestsBody.innerHTML = requests
-    .map((request) => {
-      return `
-        <tr>
-          <td>${request.name}</td>
-          <td>${request.email}</td>
-          <td>${request.topic}</td>
-          <td>${request.summary || "Keine Notizen"}</td>
-          <td>${new Date(request.createdAt).toLocaleDateString("de-CH")}</td>
-          <td>${request.status}</td>
-        </tr>
-      `;
-    })
-    .join("");
-};
-
 const loadRequests = async (query = "") => {
   if (!requestsBody) {
     return;
   }
 
-  requestsBody.innerHTML = "<tr><td colspan=\"6\">Lade Anfragen...</td></tr>";
+  requestsBody.innerHTML = '<tr><td colspan="7">Lade Anfragen...</td></tr>';
   const url = query ? `/api/requests?q=${encodeURIComponent(query)}` : "/api/requests";
   const response = await fetch(url);
   const data = await response.json();
   renderRequests(data.requests || []);
-  if (customerCount) {
-    customerCount.textContent = data.requests?.length ?? 0;
+  if (dashboardCount) {
+    dashboardCount.textContent = data.requests?.length ?? 0;
   }
 };
 
-const switchView = (view) => {
+const applyView = (view) => {
   activeView = view;
   navItems.forEach((item) => {
     item.classList.toggle("active", item.dataset.view === view);
@@ -120,24 +148,44 @@ const switchView = (view) => {
     dashboardTitle.textContent = view === "customers" ? "Kunden" : "Anfragen";
   }
 
-  if (customersGrid) {
-    customersGrid.classList.toggle("hidden", view !== "customers");
+  customersGrid?.classList.toggle("hidden", view !== "customers");
+  requestsView?.classList.toggle("hidden", view !== "requests");
+
+  if (dashboardSearch) {
+    dashboardSearch.value = "";
   }
 
-  if (requestsView) {
-    requestsView.classList.toggle("hidden", view !== "requests");
-  }
-
-  if (customerSearch) {
-    customerSearch.value = "";
-  }
-
-  showDashboard();
   if (view === "customers") {
     loadCustomers();
   } else {
     loadRequests();
   }
+};
+
+const openOfferModal = (request) => {
+  if (!offerModal || !offerForm) {
+    return;
+  }
+
+  selectedRequestId = request.id;
+  offerForm.customerName.value = request.name;
+  offerForm.customerEmail.value = request.email;
+  offerForm.customerTopic.value = request.topic;
+  offerForm.offerPrice.value = "";
+  offerForm.offerLawyer.value = "";
+  offerForm.offerContact.value = "";
+  offerForm.offerNote.value = "";
+  offerModal.classList.remove("hidden");
+  offerModal.setAttribute("aria-hidden", "false");
+};
+
+const closeOfferModal = () => {
+  if (!offerModal) {
+    return;
+  }
+  offerModal.classList.add("hidden");
+  offerModal.setAttribute("aria-hidden", "true");
+  selectedRequestId = null;
 };
 
 loginForm?.addEventListener("submit", (event) => {
@@ -148,18 +196,18 @@ loginForm?.addEventListener("submit", (event) => {
   }
 
   if (input.value === PASSWORD) {
-    errorText.textContent = "";
+    isAuthenticated = true;
     showDashboard();
-    switchView("customers");
-    loadCustomers();
+    applyView("customers");
+    errorText.textContent = "";
   } else {
-    errorText.textContent = "Passwort falsch. Bitte erneut versuchen.";
+    showLogin("Passwort falsch. Bitte erneut versuchen.");
   }
 
   input.value = "";
 });
 
-customerSearch?.addEventListener("input", (event) => {
+dashboardSearch?.addEventListener("input", (event) => {
   if (activeView === "customers") {
     loadCustomers(event.target.value);
   } else {
@@ -167,9 +215,57 @@ customerSearch?.addEventListener("input", (event) => {
   }
 });
 
+refreshButton?.addEventListener("click", () => {
+  if (activeView === "customers") {
+    loadCustomers(dashboardSearch?.value || "");
+  } else {
+    loadRequests(dashboardSearch?.value || "");
+  }
+});
+
 navItems.forEach((item) => {
   item.addEventListener("click", () => {
-    switchView(item.dataset.view);
+    if (!isAuthenticated) {
+      showLogin("Bitte zuerst einloggen.");
+      return;
+    }
+    applyView(item.dataset.view);
   });
-  loadCustomers(event.target.value);
 });
+
+requestsBody?.addEventListener("click", (event) => {
+  const button = event.target.closest(".offer-button");
+  if (!button) {
+    return;
+  }
+  const requestId = button.dataset.requestId;
+  const request = requestsCache.find((item) => item.id === requestId);
+  if (request) {
+    openOfferModal(request);
+  }
+});
+
+cancelOfferButton?.addEventListener("click", closeOfferModal);
+
+offerForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!selectedRequestId) {
+    return;
+  }
+
+  const requestIndex = requestsCache.findIndex((item) => item.id === selectedRequestId);
+  if (requestIndex === -1) {
+    return;
+  }
+
+  requestsCache[requestIndex] = {
+    ...requestsCache[requestIndex],
+    status: "Angefragt"
+  };
+
+  renderRequests(requestsCache);
+  closeOfferModal();
+  alert("Angebot gesendet. Der Gast erhält eine E-Mail mit den Offertedaten.");
+});
+
+showLogin("");
