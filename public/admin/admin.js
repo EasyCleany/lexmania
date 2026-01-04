@@ -1,34 +1,40 @@
-const homeView = document.getElementById("home-view");
-const dashboardSection = document.getElementById("dashboard");
 const PASSWORD = "Nibero2025!!";
+
 const loginForm = document.getElementById("login-form");
 const loginSection = document.getElementById("login");
 const dashboardSection = document.getElementById("dashboard");
 const errorText = document.getElementById("login-error");
 const customersGrid = document.getElementById("customers-grid");
-const customerCount = document.getElementById("customer-count");
-const customerSearch = document.getElementById("customer-search");
+const dashboardCount = document.getElementById("dashboard-count");
+const dashboardSearch = document.getElementById("dashboard-search");
 const dashboardTitle = document.getElementById("dashboard-title");
 const requestsView = document.getElementById("requests-view");
 const requestsBody = document.getElementById("requests-body");
 const navItems = document.querySelectorAll(".nav-item[data-view]");
+const refreshButton = document.getElementById("refresh-button");
 
 let activeView = "customers";
+let isAuthenticated = false;
 
 const showDashboard = () => {
-  if (homeView) {
-    homeView.classList.add("hidden");
+  loginSection?.classList.add("hidden");
+  dashboardSection?.classList.remove("hidden");
+};
+
+const showLogin = (message = "") => {
+  if (errorText) {
+    errorText.textContent = message;
   }
-  loginSection.classList.add("hidden");
-  dashboardSection.classList.remove("hidden");
+  loginSection?.classList.remove("hidden");
+  dashboardSection?.classList.add("hidden");
 };
 
 const renderCustomers = (customers) => {
-  if (!customersGrid || !customerCount) {
+  if (!customersGrid || !dashboardCount) {
     return;
   }
 
-  customerCount.textContent = customers.length;
+  dashboardCount.textContent = customers.length;
   customersGrid.innerHTML = customers
     .map((customer) => {
       const initials = customer.name
@@ -62,18 +68,6 @@ const renderCustomers = (customers) => {
     .join("");
 };
 
-const loadCustomers = async (query = "") => {
-  if (!customersGrid) {
-    return;
-  }
-
-  customersGrid.innerHTML = "<p>Lade Kunden...</p>";
-  const url = query ? `/api/customers?q=${encodeURIComponent(query)}` : "/api/customers";
-  const response = await fetch(url);
-  const data = await response.json();
-  renderCustomers(data.customers || []);
-};
-
 const renderRequests = (requests) => {
   if (!requestsBody) {
     return;
@@ -95,22 +89,34 @@ const renderRequests = (requests) => {
     .join("");
 };
 
+const loadCustomers = async (query = "") => {
+  if (!customersGrid) {
+    return;
+  }
+
+  customersGrid.innerHTML = "<p>Lade Kunden...</p>";
+  const url = query ? `/api/customers?q=${encodeURIComponent(query)}` : "/api/customers";
+  const response = await fetch(url);
+  const data = await response.json();
+  renderCustomers(data.customers || []);
+};
+
 const loadRequests = async (query = "") => {
   if (!requestsBody) {
     return;
   }
 
-  requestsBody.innerHTML = "<tr><td colspan=\"6\">Lade Anfragen...</td></tr>";
+  requestsBody.innerHTML = '<tr><td colspan="6">Lade Anfragen...</td></tr>';
   const url = query ? `/api/requests?q=${encodeURIComponent(query)}` : "/api/requests";
   const response = await fetch(url);
   const data = await response.json();
   renderRequests(data.requests || []);
-  if (customerCount) {
-    customerCount.textContent = data.requests?.length ?? 0;
+  if (dashboardCount) {
+    dashboardCount.textContent = data.requests?.length ?? 0;
   }
 };
 
-const switchView = (view) => {
+const applyView = (view) => {
   activeView = view;
   navItems.forEach((item) => {
     item.classList.toggle("active", item.dataset.view === view);
@@ -120,19 +126,13 @@ const switchView = (view) => {
     dashboardTitle.textContent = view === "customers" ? "Kunden" : "Anfragen";
   }
 
-  if (customersGrid) {
-    customersGrid.classList.toggle("hidden", view !== "customers");
+  customersGrid?.classList.toggle("hidden", view !== "customers");
+  requestsView?.classList.toggle("hidden", view !== "requests");
+
+  if (dashboardSearch) {
+    dashboardSearch.value = "";
   }
 
-  if (requestsView) {
-    requestsView.classList.toggle("hidden", view !== "requests");
-  }
-
-  if (customerSearch) {
-    customerSearch.value = "";
-  }
-
-  showDashboard();
   if (view === "customers") {
     loadCustomers();
   } else {
@@ -148,18 +148,18 @@ loginForm?.addEventListener("submit", (event) => {
   }
 
   if (input.value === PASSWORD) {
-    errorText.textContent = "";
+    isAuthenticated = true;
     showDashboard();
-    switchView("customers");
-    loadCustomers();
+    applyView("customers");
+    errorText.textContent = "";
   } else {
-    errorText.textContent = "Passwort falsch. Bitte erneut versuchen.";
+    showLogin("Passwort falsch. Bitte erneut versuchen.");
   }
 
   input.value = "";
 });
 
-customerSearch?.addEventListener("input", (event) => {
+dashboardSearch?.addEventListener("input", (event) => {
   if (activeView === "customers") {
     loadCustomers(event.target.value);
   } else {
@@ -167,9 +167,22 @@ customerSearch?.addEventListener("input", (event) => {
   }
 });
 
+refreshButton?.addEventListener("click", () => {
+  if (activeView === "customers") {
+    loadCustomers(dashboardSearch?.value || "");
+  } else {
+    loadRequests(dashboardSearch?.value || "");
+  }
+});
+
 navItems.forEach((item) => {
   item.addEventListener("click", () => {
-    switchView(item.dataset.view);
+    if (!isAuthenticated) {
+      showLogin("Bitte zuerst einloggen.");
+      return;
+    }
+    applyView(item.dataset.view);
   });
-  loadCustomers(event.target.value);
 });
+
+showLogin("");
